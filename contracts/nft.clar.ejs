@@ -4,10 +4,9 @@
 (define-constant err-owner-only (err u100))
 (define-constant err-not-token-owner (err u101))
 (define-constant airdrop (list <%= accounts.map((address) => `'${address}`).join(" ") %>))
-(define-constant idxs (list <%= accounts.map((_, idx) => `u${idx}`).join(" ") %>))
+(define-constant airdrop2 (list <%= accounts2.map((address) => `'${address}`).join(" ") %>))
 
-
-(define-non-fungible-token stacksies uint)
+(define-non-fungible-token stacksies principal)
 
 (define-data-var last-token-id uint u0)
 
@@ -20,31 +19,31 @@
 )
 
 (define-read-only (get-owner (token-id uint))
-	(ok (nft-get-owner? stacksies token-id))
+	(ok (nft-get-owner? stacksies tx-sender))
 )
 
 (define-public (transfer (token-id uint) (sender principal) (recipient principal))
 	(begin
 		(asserts! (is-eq tx-sender sender) err-not-token-owner)
-		(nft-transfer? stacksies token-id sender recipient)
+		(nft-transfer? stacksies sender sender recipient)
 	)
 )
 
 (define-public (mint (recipient principal))
 	(let
-		(
-			(token-id (+ (var-get last-token-id) u1))
-		)
+		()
 		(asserts! (is-eq tx-sender contract-owner) err-owner-only)
-		(try! (nft-mint? stacksies token-id recipient))
-		(var-set last-token-id token-id)
-		(ok token-id)
+		(try! (nft-mint? stacksies recipient recipient))
+		(ok true)
 	)
 )
 
-(define-private (private-mint (idx uint) (result bool))
-  (unwrap! (nft-mint? stacksies idx (unwrap-panic (element-at? airdrop idx))) false))
+(define-private (private-mint (id principal) (result (response bool uint)))
+  (begin
+		(try! (nft-mint? stacksies id id))
+		(ok true)))
 
 (define-public (multi-mint)
-  (begin 
-    (ok (fold private-mint idxs true))))
+  (begin
+    (try! (fold private-mint airdrop (ok true)))
+    (fold private-mint airdrop2 (ok true))))

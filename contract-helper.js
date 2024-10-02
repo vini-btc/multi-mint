@@ -18,7 +18,7 @@ let wallet = await generateWallet({
   password,
 });
 
-_.range(4000).forEach(() => {
+_.range(14000).forEach(() => {
   wallet = generateNewAccount(wallet);
 });
 
@@ -39,7 +39,14 @@ function getReadableFileSize(fileSizeInBytes) {
   const contract = await ejs.renderFile(
     path.resolve("./contracts/nft.clar.ejs"),
     {
-      accounts: wallet.accounts.map((account) =>
+      accounts: _.slice(wallet.accounts, 0, 7000).map((account) =>
+        getStxAddress({
+          account,
+          transactionVersion: TransactionVersion.Testnet,
+        })
+      ),
+
+      accounts2: _.slice(wallet.accounts, 7000, 14000).map((account) =>
         getStxAddress({
           account,
           transactionVersion: TransactionVersion.Testnet,
