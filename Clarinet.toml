@@ -7,10 +7,27 @@ cache_dir = './.cache'
 
 [[project.requirements]]
 contract_id = 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait'
+
 [contracts.nft]
 path = 'contracts/nft.clar'
 clarity_version = 2
 epoch = 2.5
+
+[contracts.airdrop]
+path = 'contracts/airdrop.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.airdrop2]
+path = 'contracts/airdrop2.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.airdrop3]
+path = 'contracts/airdrop3.clar'
+clarity_version = 2
+epoch = 2.5
+
 [repl.analysis]
 passes = ['check_checker']
 

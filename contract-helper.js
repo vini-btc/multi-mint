@@ -4,14 +4,7 @@ import {
   generateNewAccount,
   getStxAddress,
 } from "@stacks/wallet-sdk";
-import {
-  TransactionVersion,
-  principalCV,
-  cvToHex,
-  listCV,
-  hash160,
-  bufferCV,
-} from "@stacks/transactions";
+import { TransactionVersion } from "@stacks/transactions";
 import _ from "lodash";
 import ejs from "ejs";
 import path from "path";
@@ -25,7 +18,7 @@ let wallet = await generateWallet({
   password,
 });
 
-_.range(14000).forEach(() => {
+_.range(14994).forEach(() => {
   wallet = generateNewAccount(wallet);
 });
 
@@ -42,43 +35,31 @@ function getReadableFileSize(fileSizeInBytes) {
   return `${size.toFixed(2)} ${units[unitIndex]}`;
 }
 
-(async () => {
+async function renderContract(addresses, name) {
   const contract = await ejs.renderFile(
-    path.resolve("./contracts/nft.clar.ejs"),
+    path.resolve("./contracts/airdrop.clar.ejs"),
     {
-      accounts: cvToHex(
-        listCV(
-          _.slice(wallet.accounts, 0, 7000).map((account) =>
-            principalCV(
-              getStxAddress({
-                account,
-                transactionVersion: TransactionVersion.Testnet,
-              })
-            )
-          )
-        )
+      accounts: addresses.map((account) =>
+        getStxAddress({
+          account,
+          transactionVersion: TransactionVersion.Testnet,
+        })
       ),
-      accounts2: cvToHex(
-        listCV(
-          _.slice(wallet.accounts, 7000, 14000).map((account) =>
-            principalCV(
-              getStxAddress({
-                account,
-                transactionVersion: TransactionVersion.Testnet,
-              })
-            )
-          )
-        )
-      ),
-
-      numberOfAccounts: wallet.accounts.length / 2,
     },
     {
       escape: (str) => str,
     }
   );
-  fs.writeFileSync(path.resolve("./contracts/nft.clar"), contract);
+  fs.writeFileSync(path.resolve(`./contracts/${name}.clar`), contract);
+}
+
+(async () => {
+  renderContract(_.slice(wallet.accounts, 0, 7000), "airdrop");
+  renderContract(_.slice(wallet.accounts, 7000, 14000), "airdrop2");
+  renderContract(_.slice(wallet.accounts, 14000, 14995), "airdrop3");
+
   const stats = fs.statSync("./contracts/nft.clar");
   const fileSizeInBytes = stats.size;
+
   console.log(`contract file size: ${getReadableFileSize(fileSizeInBytes)}`);
 })();
