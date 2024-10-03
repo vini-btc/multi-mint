@@ -4,7 +4,14 @@ import {
   generateNewAccount,
   getStxAddress,
 } from "@stacks/wallet-sdk";
-import { TransactionVersion } from "@stacks/transactions";
+import {
+  TransactionVersion,
+  principalCV,
+  cvToHex,
+  listCV,
+  hash160,
+  bufferCV,
+} from "@stacks/transactions";
 import _ from "lodash";
 import ejs from "ejs";
 import path from "path";
@@ -39,19 +46,32 @@ function getReadableFileSize(fileSizeInBytes) {
   const contract = await ejs.renderFile(
     path.resolve("./contracts/nft.clar.ejs"),
     {
-      accounts: _.slice(wallet.accounts, 0, 7000).map((account) =>
-        getStxAddress({
-          account,
-          transactionVersion: TransactionVersion.Testnet,
-        })
+      accounts: cvToHex(
+        listCV(
+          _.slice(wallet.accounts, 0, 7000).map((account) =>
+            principalCV(
+              getStxAddress({
+                account,
+                transactionVersion: TransactionVersion.Testnet,
+              })
+            )
+          )
+        )
+      ),
+      accounts2: cvToHex(
+        listCV(
+          _.slice(wallet.accounts, 7000, 14000).map((account) =>
+            principalCV(
+              getStxAddress({
+                account,
+                transactionVersion: TransactionVersion.Testnet,
+              })
+            )
+          )
+        )
       ),
 
-      accounts2: _.slice(wallet.accounts, 7000, 14000).map((account) =>
-        getStxAddress({
-          account,
-          transactionVersion: TransactionVersion.Testnet,
-        })
-      ),
+      numberOfAccounts: wallet.accounts.length / 2,
     },
     {
       escape: (str) => str,

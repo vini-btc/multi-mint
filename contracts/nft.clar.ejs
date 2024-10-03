@@ -3,10 +3,9 @@
 (define-constant contract-owner tx-sender)
 (define-constant err-owner-only (err u100))
 (define-constant err-not-token-owner (err u101))
-(define-constant airdrop (list <%= accounts.map((address) => `'${address}`).join(" ") %>))
-(define-constant airdrop2 (list <%= accounts2.map((address) => `'${address}`).join(" ") %>))
-
-(define-non-fungible-token stacksies principal)
+(define-constant airdrop <%= accounts %>)
+(define-constant airdrop2 <%= accounts2 %>)
+(define-non-fungible-token stacksies uint)
 
 (define-data-var last-token-id uint u0)
 
@@ -19,31 +18,36 @@
 )
 
 (define-read-only (get-owner (token-id uint))
-	(ok (nft-get-owner? stacksies tx-sender))
+	(ok (nft-get-owner? stacksies token-id))
 )
 
 (define-public (transfer (token-id uint) (sender principal) (recipient principal))
 	(begin
 		(asserts! (is-eq tx-sender sender) err-not-token-owner)
-		(nft-transfer? stacksies sender sender recipient)
+		(nft-transfer? stacksies token-id sender recipient)
 	)
 )
 
 (define-public (mint (recipient principal))
 	(let
-		()
+		(
+			(token-id (+ (var-get last-token-id) u1))
+		)
 		(asserts! (is-eq tx-sender contract-owner) err-owner-only)
-		(try! (nft-mint? stacksies recipient recipient))
+		(try! (nft-mint? stacksies token-id recipient))
 		(ok true)
 	)
 )
 
-(define-private (private-mint (id principal) (result (response bool uint)))
+(define-private (private-mint (receiver principal) (id uint))
   (begin
-		(try! (nft-mint? stacksies id id))
-		(ok true)))
+		(unwrap! (nft-mint? stacksies id receiver) id)
+		(+ id u1)))
 
 (define-public (multi-mint)
-  (begin
-    (try! (fold private-mint airdrop (ok true)))
-    (fold private-mint airdrop2 (ok true))))
+  (let 
+    ((last-token-after-first-batch (fold private-mint (unwrap-panic (from-consensus-buff? (list 7000 principal) airdrop)) (var-get last-token-id))))
+  
+		(fold private-mint (unwrap-panic (from-consensus-buff? (list 7000 principal) airdrop2)) last-token-after-first-batch)
+    (var-set last-token-id (+ last-token-after-first-batch u7000))
+    (ok true)))
