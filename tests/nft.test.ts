@@ -3,6 +3,7 @@ import {
   principalCV,
   TransactionVersion,
   trueCV,
+  uintCV,
 } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 import _ from "lodash";
@@ -14,7 +15,9 @@ import {
 } from "@stacks/wallet-sdk";
 
 const accounts = simnet.getAccounts();
-const caller = accounts.get("wallet_1")!;
+const deployer = accounts.get("deployer")!;
+
+console.log("Preparing wallets for running test");
 
 const password = "password";
 const secretKey = generateSecretKey();
@@ -24,7 +27,7 @@ let wallet = await generateWallet({
   password,
 });
 
-_.range(14994).forEach(() => {
+_.range(14995).forEach(() => {
   wallet = generateNewAccount(wallet);
 });
 
@@ -37,7 +40,7 @@ const airdrop1 = _.slice(wallet.accounts, 0, 7000).map((account) =>
   )
 );
 
-const airdrop2 = _.slice(wallet.accounts, 0, 7000).map((account) =>
+const airdrop2 = _.slice(wallet.accounts, 7000, 14000).map((account) =>
   principalCV(
     getStxAddress({
       account,
@@ -46,7 +49,7 @@ const airdrop2 = _.slice(wallet.accounts, 0, 7000).map((account) =>
   )
 );
 
-const airdrop3 = _.slice(wallet.accounts, 14000, 14995).map((account) =>
+const airdrop3 = _.slice(wallet.accounts, 14000, 14996).map((account) =>
   principalCV(
     getStxAddress({
       account,
@@ -57,16 +60,16 @@ const airdrop3 = _.slice(wallet.accounts, 14000, 14995).map((account) =>
 
 describe("airdrop", () => {
   describe("multi-mint", () => {
-    it("mints 14995 NFTs", () => {
+    it("mints 14996 NFTs", () => {
       const { result, events } = simnet.callPublicFn(
         "nft",
         "multi-mint",
-        [listCV(airdrop1), listCV(airdrop2), listCV(airdrop3)],
-        caller
+        [listCV(airdrop1), listCV(airdrop2), listCV(airdrop3), uintCV(0)],
+        deployer
       );
 
       expect(result).toBeOk(trueCV());
-      expect(events.length).toBe(14995);
+      expect(events.length).toBe(14996);
     });
   });
 });

@@ -40,10 +40,11 @@
 
 (define-private (private-mint (receiver principal) (id uint))
   (begin
-		(is-err (nft-mint? stacksies id receiver))
+		(is-err (nft-mint? stacksies (+ id u1) receiver))
 		(+ id u1)))
 
-(define-public (multi-mint (airdrop1 (list 7000 principal)) (airdrop2 (list 7000 principal)) (airdrop3 (list 995 principal)))
+(define-public (multi-mint (airdrop1 (list 7000 principal)) (airdrop2 (list 7000 principal)) (airdrop3 (list 996 principal)) (start-last-token-id uint))
   (begin
-    (var-set last-token-id (fold private-mint airdrop1 (fold private-mint airdrop2 (fold private-mint airdrop3 (+ (var-get last-token-id) u1)))))
+		(asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (var-set last-token-id (fold private-mint airdrop1 (fold private-mint airdrop2 (fold private-mint airdrop3 start-last-token-id))))
     (ok true)))
