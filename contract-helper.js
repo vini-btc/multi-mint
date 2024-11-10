@@ -1,26 +1,7 @@
-import {
-  generateWallet,
-  generateSecretKey,
-  generateNewAccount,
-  getStxAddress,
-} from "@stacks/wallet-sdk";
 import { TransactionVersion } from "@stacks/transactions";
-import _ from "lodash";
 import ejs from "ejs";
 import path from "path";
 import fs from "fs";
-
-const password = "password";
-const secretKey = generateSecretKey();
-
-let wallet = await generateWallet({
-  secretKey,
-  password,
-});
-
-_.range(14994).forEach(() => {
-  wallet = generateNewAccount(wallet);
-});
 
 function getReadableFileSize(fileSizeInBytes) {
   const units = ["B", "KB", "MB", "GB", "TB"];

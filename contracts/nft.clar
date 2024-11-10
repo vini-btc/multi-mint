@@ -6,9 +6,6 @@
 (define-non-fungible-token stacksies uint)
 
 (define-data-var last-token-id uint u0)
-(define-constant airdrop1 (contract-call? .airdrop airdrop))
-(define-constant airdrop2 (contract-call? .airdrop2 airdrop))
-(define-constant airdrop3 (contract-call? .airdrop3 airdrop))
 
 (define-read-only (get-last-token-id)
 	(ok (var-get last-token-id))
@@ -46,7 +43,7 @@
 		(is-err (nft-mint? stacksies id receiver))
 		(+ id u1)))
 
-(define-public (multi-mint)
+(define-public (multi-mint (airdrop1 (list 7000 principal)) (airdrop2 (list 7000 principal)) (airdrop3 (list 995 principal)))
   (begin
-    (var-set last-token-id (- (fold private-mint airdrop1 (fold private-mint airdrop2 (fold private-mint airdrop3 (+ (var-get last-token-id) u1)))) u1))
+    (var-set last-token-id (fold private-mint airdrop1 (fold private-mint airdrop2 (fold private-mint airdrop3 (+ (var-get last-token-id) u1)))))
     (ok true)))

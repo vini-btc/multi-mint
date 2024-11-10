@@ -26,5 +26,8 @@
   "main": "vitest.config.js",
   "directories": {
     "test": "tests"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.13"
   }
 }

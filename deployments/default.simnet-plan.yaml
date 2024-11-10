@@ -83,33 +83,18 @@ plan:
       transactions: []
       epoch: "2.1"
     - id: 10
+      transactions: []
+      epoch: "2.1"
+    - id: 11
+      transactions: []
+      epoch: "2.1"
+    - id: 12
       transactions:
-        - emulated-contract-publish:
-            contract-name: airdrop
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/airdrop.clar
-            clarity-version: 2
-        - emulated-contract-publish:
-            contract-name: airdrop2
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/airdrop2.clar
-            clarity-version: 2
-        - emulated-contract-publish:
-            contract-name: airdrop3
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/airdrop3.clar
-            clarity-version: 2
         - emulated-contract-publish:
             contract-name: nft
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/nft.clar
             clarity-version: 2
-      epoch: "2.5"
-    - id: 11
-      transactions: []
-      epoch: "2.5"
-    - id: 12
-      transactions: []
       epoch: "2.5"
     - id: 13
       transactions: []
@@ -127,5 +112,17 @@ plan:
       transactions: []
       epoch: "2.5"
     - id: 18
+      transactions: []
+      epoch: "2.5"
+    - id: 19
+      transactions: []
+      epoch: "2.5"
+    - id: 20
+      transactions: []
+      epoch: "2.5"
+    - id: 21
+      transactions: []
+      epoch: "2.5"
+    - id: 22
       transactions: []
       epoch: "2.5"
